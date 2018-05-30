@@ -1,1 +1,3 @@
-nest-demo
+# Modern MEAN with NestJS
+
+TODO: Write README
