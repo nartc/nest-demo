@@ -1,7 +1,9 @@
 import { NestFactory } from '@nestjs/core';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 
 import * as helmet from 'helmet';
+import { Request, Response } from 'express';
 declare const module: any;
 
 async function bootstrap() {
@@ -18,6 +20,43 @@ async function bootstrap() {
     const hostDomain = isDev === 'development' ? `${AppModule.host}:${AppModule.port.toString()}` : AppModule.host;
 
     app.use(helmet());
+
+    /**
+     * Create Swagger options
+     * TODO: Add more tags
+     */
+    const swaggerOptions = new DocumentBuilder()
+        .setTitle('NestJS Demo')
+        .setDescription('API Documentation for NestJS Demo')
+        .setVersion('1.0.0')
+        .setBasePath('/api')
+        .addTag('User', 'User related API')
+        .build();
+
+    /**
+     * Create Swagger documentation
+     */
+    const swaggerDoc = SwaggerModule.createDocument(app, swaggerOptions);
+
+    /**
+     * Serve swagger.json on /api/docs/swagger.json
+     */
+    app.use('/api/docs/swagger.json', (req: Request, res: Response) => {
+        res.send(swaggerDoc);
+    });
+
+    /**
+     * Serve SwaggerUI on /api/docs
+     */
+    SwaggerModule.setup('/api/docs', app, null, {
+        explorer: true,
+        customSiteTitle: 'NestJS Demo API Documentation',
+        swaggerUrl: `${hostDomain}/api/docs/swagger.json`,
+        swaggerOptions: {
+            docExpansion: 'none',
+        },
+    });
+
     await app.listen(AppModule.port);
 
     if (module.hot) {
