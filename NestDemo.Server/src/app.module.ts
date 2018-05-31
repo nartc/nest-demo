@@ -12,6 +12,10 @@ import { ConfigVar } from 'shared/config/config.enum';
     providers: [AppService],
 })
 export class AppModule {
+    /**
+     * * These variables are static because we are not going to be creating any instance of AppModule
+     * * so making these static allows us to grab them later.
+     */
     public static port: number | string;
     public static host: string;
 
