@@ -5,9 +5,10 @@ import { AppService } from './app.service';
 import { SharedModule } from './shared/shared.module';
 import { ConfigService } from './shared/config/config.service';
 import { ConfigVar } from 'shared/config/config.enum';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
-    imports: [SharedModule, MongooseModule.forRoot(ConfigService.connectionString)],
+    imports: [SharedModule, MongooseModule.forRoot(ConfigService.connectionString), AuthModule],
     controllers: [AppController],
     providers: [AppService],
 })

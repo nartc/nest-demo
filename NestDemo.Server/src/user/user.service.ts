@@ -1,14 +1,17 @@
 import { SharedService } from 'shared/shared.service';
 import { User } from './models/user.model';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Inject, forwardRef } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { USER_MODEL } from './schema/user.schema';
 import { Model } from 'mongoose';
 import { MapperService } from 'shared/mapping/mapper.service';
+import { AuthService } from 'auth/auth.service';
 
 @Injectable()
 export class UserService extends SharedService<User> {
     constructor(
+        @Inject(forwardRef(() => AuthService))
+        private readonly _authService: AuthService,
         @InjectModel(USER_MODEL) private readonly _userModel: Model<User>,
         private readonly _mapperService: MapperService,
     ) {
