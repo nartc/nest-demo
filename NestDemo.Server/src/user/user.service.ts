@@ -1,11 +1,15 @@
 import { SharedService } from 'shared/shared.service';
 import { User } from './models/user.model';
-import { Injectable, Inject, forwardRef } from '@nestjs/common';
+import { Injectable, Inject, forwardRef, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { USER_MODEL } from './schema/user.schema';
 import { Model } from 'mongoose';
 import { MapperService } from 'shared/mapping/mapper.service';
 import { AuthService } from 'auth/auth.service';
+import { LoginResponse } from './models/login-response.model';
+import { RegisterParams } from './models/register-params.model';
+import { genSalt, hash } from 'bcryptjs';
+import { UserVm } from './models/user-vm.model';
 
 @Injectable()
 export class UserService extends SharedService<User> {
@@ -16,5 +20,33 @@ export class UserService extends SharedService<User> {
         private readonly _mapperService: MapperService,
     ) {
         super(_userModel);
+    }
+
+    async register(registerParams: RegisterParams): Promise<User> {
+        const { username, password } = registerParams;
+
+        const newUser: User = new this._userModel();
+        newUser.username = username;
+
+        const salt = await genSalt(10);
+        newUser.password = await hash(password, salt);
+
+        try {
+            const result = await this.create(newUser);
+            return this.getById(result._id);
+        } catch (e) {
+            throw new HttpException('Error registering', HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    async login(user: User): Promise<LoginResponse> {
+        const fetchedUser: UserVm = this._mapperService.mapper.map('User', 'UserVm', user.toJSON());
+        const payload = { user: fetchedUser };
+        const token = await this._authService.signPayload(payload);
+
+        return {
+            token,
+            user: fetchedUser,
+        } as LoginResponse;
     }
 }
