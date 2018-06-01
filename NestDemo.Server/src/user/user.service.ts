@@ -1,21 +1,21 @@
-import { SharedService } from 'shared/shared.service';
+import { SharedService } from '../shared/shared.service';
 import { User } from './models/user.model';
 import { Injectable, Inject, forwardRef, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { USER_MODEL } from './schema/user.schema';
 import { Model } from 'mongoose';
-import { MapperService } from 'shared/mapping/mapper.service';
-import { AuthService } from 'auth/auth.service';
+import { MapperService } from '../shared/mapping/mapper.service';
+import { AuthService } from '../auth/auth.service';
 import { LoginResponse } from './models/login-response.model';
 import { RegisterParams } from './models/register-params.model';
-import { genSalt, hash } from 'bcryptjs';
+import { genSalt, hash, compare } from 'bcryptjs';
 import { UserVm } from './models/user-vm.model';
 
 @Injectable()
 export class UserService extends SharedService<User> {
     constructor(
         @Inject(forwardRef(() => AuthService))
-        private readonly _authService: AuthService,
+        readonly _authService: AuthService,
         @InjectModel(USER_MODEL) private readonly _userModel: Model<User>,
         private readonly _mapperService: MapperService,
     ) {
@@ -26,7 +26,7 @@ export class UserService extends SharedService<User> {
         const { username, password } = registerParams;
 
         const newUser: User = new this._userModel();
-        newUser.username = username;
+        newUser.username = username.toLowerCase();
 
         const salt = await genSalt(10);
         newUser.password = await hash(password, salt);
@@ -48,5 +48,9 @@ export class UserService extends SharedService<User> {
             token,
             user: fetchedUser,
         } as LoginResponse;
+    }
+
+    async comparePassword(password: string, input: string): Promise<boolean> {
+        return compare(input, password);
     }
 }

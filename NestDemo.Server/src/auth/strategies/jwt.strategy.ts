@@ -4,7 +4,9 @@ import { AuthService } from '../auth.service';
 import { ConfigService } from 'shared/config/config.service';
 import { ConfigVar } from 'shared/config/config.enum';
 import { JwtPayload } from '../jwt-payload.model';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
     constructor(private readonly _authService: AuthService, private readonly _configService: ConfigService) {
         super({

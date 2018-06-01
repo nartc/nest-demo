@@ -1,11 +1,11 @@
-import { Injectable, Inject, forwardRef, PayloadTooLargeException } from '@nestjs/common';
-import { UserService } from 'user/user.service';
-import { ConfigService } from 'shared/config/config.service';
+import { Injectable, Inject, forwardRef } from '@nestjs/common';
+import { UserService } from '../user/user.service';
+import { ConfigService } from '../shared/config/config.service';
 import { SignOptions, sign } from 'jsonwebtoken';
-import { ConfigVar } from 'shared/config/config.enum';
-import { User } from 'user/models/user.model';
+import { ConfigVar } from '../shared/config/config.enum';
+import { User } from '../user/models/user.model';
 import { JwtPayload } from './jwt-payload.model';
-import { UserVm } from 'user/models/user-vm.model';
+import { UserVm } from '../user/models/user-vm.model';
 
 @Injectable()
 export class AuthService {
@@ -14,7 +14,7 @@ export class AuthService {
 
     constructor(
         @Inject(forwardRef(() => UserService))
-        private readonly _userService: UserService,
+        readonly _userService: UserService,
         private readonly _configService: ConfigService,
     ) {
         this.jwtOptions = { expiresIn: '12h' };
