@@ -3,9 +3,9 @@ import { UserService } from 'user/user.service';
 import { ConfigService } from 'shared/config/config.service';
 import { SignOptions, sign } from 'jsonwebtoken';
 import { ConfigVar } from 'shared/config/config.enum';
-import { UserVm } from 'user/models/user-vm.model';
 import { User } from 'user/models/user.model';
 import { JwtPayload } from './jwt-payload.model';
+import { UserVm } from 'user/models/user-vm.model';
 
 @Injectable()
 export class AuthService {
@@ -21,7 +21,7 @@ export class AuthService {
         this.jwtKey = _configService.getConfigVariable(ConfigVar.JWT_KEY);
     }
 
-    async signPayload(payload: UserVm): Promise<string> {
+    async signPayload(payload: { user: UserVm }): Promise<string> {
         return sign(payload, this.jwtKey, this.jwtOptions);
     }
 
