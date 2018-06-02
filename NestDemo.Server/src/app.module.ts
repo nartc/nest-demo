@@ -8,6 +8,7 @@ import { ConfigVar } from './shared/config/config.enum';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { AppRoutingModule } from './app-routing.module';
+import { TodoModule } from './todo/todo.module';
 
 @Module({
     imports: [
@@ -16,6 +17,7 @@ import { AppRoutingModule } from './app-routing.module';
         MongooseModule.forRoot(ConfigService.connectionString),
         AuthModule,
         UserModule,
+        TodoModule,
     ],
     providers: [AppService],
 })

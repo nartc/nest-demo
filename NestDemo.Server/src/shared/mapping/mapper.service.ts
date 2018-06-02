@@ -19,5 +19,9 @@ export class MapperService {
             .createMap('User', 'UserVm')
             .forSourceMember('_id', (opts: AutoMapperJs.ISourceMemberConfigurationOptions) => opts.ignore())
             .forSourceMember('password', (opts: AutoMapperJs.ISourceMemberConfigurationOptions) => opts.ignore());
+
+        config
+            .createMap('Todo', 'TodoVm')
+            .forSourceMember('_id', (opts: AutoMapperJs.ISourceMemberConfigurationOptions) => opts.ignore());
     }
 }
