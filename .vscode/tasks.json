@@ -1,0 +1,23 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "type": "npm",
+            "script": "compile",
+            "identifier": "compilets",
+            "path": "NestDemo.Server/",
+            "problemMatcher": [],
+            "options": {
+                "cwd": "${workspaceFolder}/NestDemo.Server",
+            }
+        },
+        {
+            "type": "shell",
+            "command": "mongod",
+            "identifier": "local-mongo",
+            "label": "MongoDB"
+        }
+    ]
+}

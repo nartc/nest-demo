@@ -4,13 +4,19 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { SharedModule } from './shared/shared.module';
 import { ConfigService } from './shared/config/config.service';
-import { ConfigVar } from 'shared/config/config.enum';
+import { ConfigVar } from './shared/config/config.enum';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
+import { AppRoutingModule } from './app-routing.module';
 
 @Module({
-    imports: [SharedModule, MongooseModule.forRoot(ConfigService.connectionString), AuthModule, UserModule],
-    controllers: [AppController],
+    imports: [
+        SharedModule,
+        AppRoutingModule,
+        MongooseModule.forRoot(ConfigService.connectionString),
+        AuthModule,
+        UserModule,
+    ],
     providers: [AppService],
 })
 export class AppModule {

@@ -1,11 +1,11 @@
 import { Controller, Post, Body, HttpCode, HttpStatus, HttpException } from '@nestjs/common';
 import { ApiUseTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
 import { UserService } from './user.service';
-import { MapperService } from 'shared/mapping/mapper.service';
+import { MapperService } from '../shared/mapping/mapper.service';
 import { UserVm } from './models/user-vm.model';
 import { LoginResponse } from './models/login-response.model';
 import { RegisterParams } from './models/register-params.model';
-import { ApiException } from 'shared/shared.model';
+import { ApiException } from '../shared/shared.model';
 import { User } from './models/user.model';
 import { LoginParams } from './models/login-params.model';
 

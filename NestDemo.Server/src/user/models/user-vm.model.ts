@@ -1,4 +1,4 @@
-import { SharedModelVm } from 'shared/shared.model';
+import { SharedModelVm } from '../../shared/shared.model';
 import { UserRole } from './user-role.enum';
 import { ApiModelProperty, ApiModelPropertyOptional } from '@nestjs/swagger';
 

@@ -1,4 +1,4 @@
-import { SharedModel } from 'shared/shared.model';
+import { SharedModel } from '../../shared/shared.model';
 import { UserRole } from './user-role.enum';
 
 export interface User extends SharedModel {

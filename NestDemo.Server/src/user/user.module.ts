@@ -1,5 +1,5 @@
 import { Module, forwardRef } from '@nestjs/common';
-import { SharedModule } from 'shared/shared.module';
+import { SharedModule } from '../shared/shared.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { USER_MODEL, UserSchema } from './schema/user.schema';
 import { UserService } from './user.service';
