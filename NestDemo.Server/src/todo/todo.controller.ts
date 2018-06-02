@@ -11,22 +11,33 @@ import {
     NotFoundException,
     BadRequestException,
     Put,
+    UseGuards,
+    Req,
 } from '@nestjs/common';
-import { ApiUseTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
+import { ApiUseTags, ApiResponse, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { TodoService } from './todo.service';
 import { MapperService } from '../shared/mapping/mapper.service';
 import { TodoParams } from './models/todo-params.model';
 import { TodoVm } from './models/todo-vm.model';
 import { Todo } from './models/todo.model';
 import { ApiException } from '../shared/shared.model';
+import { AuthGuard } from '@nestjs/passport';
+import { Request } from 'express';
+import { RolesGuard } from '../shared/guards/roles.guard';
+import { Roles } from '../shared/decorators/roles.decorator';
+import { UserRole } from '../user/models/user-role.enum';
 
 @Controller('todos')
+@UseGuards(AuthGuard('jwt'))
 @ApiUseTags('Todo')
+@ApiBearerAuth()
 export class TodoController {
     constructor(private readonly _todoService: TodoService, private readonly _mapperService: MapperService) {}
 
     @Post('create')
     @HttpCode(200)
+    @Roles(UserRole.Admin)
+    @UseGuards(RolesGuard)
     @ApiResponse({
         status: HttpStatus.OK,
         description: 'Create todo successful',
@@ -81,7 +92,7 @@ export class TodoController {
         title: 'GET Get Todos',
         operationId: 'Todo_GetTodos',
     })
-    async getAllTodos(): Promise<TodoVm[]> {
+    async getAllTodos(@Req() request: Request): Promise<TodoVm[]> {
         let todos: Todo[];
         try {
             todos = await this._todoService.getAll();
@@ -96,7 +107,8 @@ export class TodoController {
     }
 
     @Delete(':id')
-    @HttpCode(200)
+    @Roles(UserRole.Admin)
+    @UseGuards(RolesGuard)
     @ApiResponse({
         status: HttpStatus.OK,
         description: 'Delete todo successful',
@@ -130,7 +142,6 @@ export class TodoController {
     }
 
     @Get(':id')
-    @HttpCode(200)
     @ApiResponse({
         status: HttpStatus.OK,
         description: 'Get todo successful',

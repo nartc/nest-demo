@@ -21,7 +21,7 @@ export class AuthService {
         this.jwtKey = _configService.getConfigVariable(ConfigVar.JWT_KEY);
     }
 
-    async signPayload(payload: { user: UserVm }): Promise<string> {
+    async signPayload(payload: JwtPayload): Promise<string> {
         return sign(payload, this.jwtKey, this.jwtOptions);
     }
 

@@ -33,6 +33,7 @@ async function bootstrap() {
         .setBasePath('/api')
         .addTag('User', 'User related API')
         .addTag('Todo', 'Todo related API')
+        .addBearerAuth('Authorization', 'header')
         .build();
 
     /**

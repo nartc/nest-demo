@@ -10,6 +10,7 @@ import { LoginResponse } from './models/login-response.model';
 import { RegisterParams } from './models/register-params.model';
 import { genSalt, hash, compare } from 'bcryptjs';
 import { UserVm } from './models/user-vm.model';
+import { JwtPayload } from '../auth/jwt-payload.model';
 
 @Injectable()
 export class UserService extends SharedService<User> {
@@ -43,7 +44,10 @@ export class UserService extends SharedService<User> {
 
     async login(user: User): Promise<LoginResponse> {
         const fetchedUser: UserVm = this._mapperService.mapper.map(this.modelName, this.viewModelName, user.toJSON());
-        const payload = { user: fetchedUser };
+        const payload: JwtPayload = {
+            username: fetchedUser.username,
+            role: fetchedUser.role,
+        };
         const token = await this._authService.signPayload(payload);
 
         return {
