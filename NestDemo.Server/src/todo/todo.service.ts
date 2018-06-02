@@ -4,7 +4,6 @@ import { Todo } from './models/todo.model';
 import { TODO_MODEL } from './schema/todo.schema';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
-import { MapperService } from '../shared/mapping/mapper.service';
 
 @Injectable()
 export class TodoService extends SharedService<Todo> {

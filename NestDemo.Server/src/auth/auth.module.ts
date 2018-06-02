@@ -1,4 +1,4 @@
-import { Module, forwardRef } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { UserModule } from '../user/user.module';
@@ -8,4 +8,5 @@ import { UserModule } from '../user/user.module';
     providers: [AuthService, JwtStrategy],
     exports: [AuthService],
 })
-export class AuthModule {}
+export class AuthModule {
+}

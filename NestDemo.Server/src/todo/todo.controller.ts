@@ -1,23 +1,22 @@
 import {
-    Controller,
+    BadRequestException,
     Body,
-    InternalServerErrorException,
-    Post,
+    Controller,
+    Delete,
+    Get,
     HttpCode,
     HttpStatus,
-    Get,
-    Delete,
-    Param,
+    InternalServerErrorException,
     NotFoundException,
-    BadRequestException,
+    Param,
+    Post,
     Put,
-    UseGuards,
     Req,
+    UseGuards,
 } from '@nestjs/common';
-import { ApiUseTags, ApiResponse, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiUseTags } from '@nestjs/swagger';
 import { TodoService } from './todo.service';
 import { MapperService } from '../shared/mapping/mapper.service';
-import { TodoParams } from './models/todo-params.model';
 import { TodoVm } from './models/todo-vm.model';
 import { Todo } from './models/todo.model';
 import { ApiException } from '../shared/shared.model';
@@ -32,7 +31,8 @@ import { UserRole } from '../user/models/user-role.enum';
 @ApiUseTags('Todo')
 @ApiBearerAuth()
 export class TodoController {
-    constructor(private readonly _todoService: TodoService, private readonly _mapperService: MapperService) {}
+    constructor(private readonly _todoService: TodoService, private readonly _mapperService: MapperService) {
+    }
 
     @Post('create')
     @HttpCode(200)
@@ -57,10 +57,10 @@ export class TodoController {
         title: 'POST Create new Todo',
         operationId: 'Todo_CreateTodo',
     })
-    async createTodo(@Body() todoParams: TodoParams): Promise<TodoVm> {
+    async createTodo(@Body('content') content: string): Promise<TodoVm> {
         let todo: Todo;
         try {
-            todo = await this._todoService.createFromRequestBody(todoParams);
+            todo = await this._todoService.createFromRequestBody(content);
         } catch (e) {
             throw new InternalServerErrorException(e);
         }

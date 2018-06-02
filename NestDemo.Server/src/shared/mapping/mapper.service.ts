@@ -1,6 +1,5 @@
 import 'automapper-ts/dist/automapper';
 import { Injectable } from '@nestjs/common';
-import { Document, model, Model } from 'mongoose';
 
 @Injectable()
 export class MapperService {
