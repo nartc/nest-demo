@@ -1,5 +1,5 @@
 import { SchemaDefinition } from 'mongoose';
-import { SharedDefinition } from 'shared/shared.model';
+import { SharedDefinition } from '../../shared/shared.model';
 
 export const TodoDefinition: SchemaDefinition = {
     title: {

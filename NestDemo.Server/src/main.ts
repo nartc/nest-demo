@@ -32,6 +32,7 @@ async function bootstrap() {
         .setVersion('1.0.0')
         .setBasePath('/api')
         .addTag('User', 'User related API')
+        .addTag('Todo', 'Todo related API')
         .build();
 
     /**

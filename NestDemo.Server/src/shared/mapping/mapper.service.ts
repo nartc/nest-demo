@@ -1,5 +1,6 @@
 import 'automapper-ts/dist/automapper';
 import { Injectable } from '@nestjs/common';
+import { Document, model, Model } from 'mongoose';
 
 @Injectable()
 export class MapperService {
@@ -22,6 +23,10 @@ export class MapperService {
 
         config
             .createMap('Todo', 'TodoVm')
+            .forSourceMember('_id', (opts: AutoMapperJs.ISourceMemberConfigurationOptions) => opts.ignore());
+
+        config
+            .createMap('Todo[]', 'TodoVm[]')
             .forSourceMember('_id', (opts: AutoMapperJs.ISourceMemberConfigurationOptions) => opts.ignore());
     }
 }
