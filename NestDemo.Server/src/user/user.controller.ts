@@ -1,4 +1,12 @@
-import { Controller, Post, Body, HttpCode, HttpStatus, HttpException } from '@nestjs/common';
+import {
+    Controller,
+    Post,
+    Body,
+    HttpCode,
+    HttpStatus,
+    InternalServerErrorException,
+    BadRequestException,
+} from '@nestjs/common';
 import { ApiUseTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
 import { UserService } from './user.service';
 import { MapperService } from '../shared/mapping/mapper.service';
@@ -37,17 +45,17 @@ export class UserController {
     })
     async register(@Body() registerParams: RegisterParams): Promise<UserVm> {
         const { username, password } = registerParams;
-        if (!username || !password) throw new HttpException('Username/Password is required', HttpStatus.BAD_REQUEST);
+        if (!username || !password) throw new BadRequestException('Username/Password is required');
 
         let user: User;
 
         try {
             user = await this._userService.getOne(username.toLowerCase(), 'username');
         } catch (e) {
-            throw new HttpException('Server error occurred', HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new InternalServerErrorException(e);
         }
 
-        if (user) throw new HttpException(`${username} is already existed`, HttpStatus.BAD_REQUEST);
+        if (user) throw new BadRequestException(`${username} is already existed`);
 
         const newUser: User = await this._userService.register(registerParams);
         return this._mapperService.mapper.map('User', 'UserVm', newUser.toJSON());
@@ -77,21 +85,21 @@ export class UserController {
     async login(@Body() loginParams: LoginParams): Promise<LoginResponse> {
         const { username, password } = loginParams;
 
-        if (!username || !password) throw new HttpException('Username/Password is required', HttpStatus.BAD_REQUEST);
+        if (!username || !password) throw new BadRequestException('Username/Password is required');
 
         let user: User;
 
         try {
             user = await this._userService.getOne(username.toLowerCase(), 'username');
         } catch (e) {
-            throw new HttpException('Server error occurred', HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new InternalServerErrorException(e);
         }
 
-        if (!user) throw new HttpException('Invalid credentials', HttpStatus.BAD_REQUEST);
+        if (!user) throw new BadRequestException('Invalid credentials');
 
         const isMatched: boolean = await this._userService.comparePassword(user.password, password);
 
-        if (!isMatched) throw new HttpException('Invalid credentials', HttpStatus.BAD_REQUEST);
+        if (!isMatched) throw new BadRequestException('Invalid credentials');
 
         return this._userService.login(user);
     }

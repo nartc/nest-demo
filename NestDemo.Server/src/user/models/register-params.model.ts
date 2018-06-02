@@ -1,4 +1,4 @@
-import { ApiModelProperty } from '@nestjs/swagger';
+import { ApiModelProperty, ApiModelPropertyOptional } from '@nestjs/swagger';
 
 export class RegisterParams {
     @ApiModelProperty({ type: String, minLength: 6 })
@@ -6,4 +6,8 @@ export class RegisterParams {
 
     @ApiModelProperty({ type: String, minLength: 6, format: 'password' })
     password: string;
+
+    @ApiModelPropertyOptional() firstName?: string;
+
+    @ApiModelPropertyOptional() lastName?: string;
 }

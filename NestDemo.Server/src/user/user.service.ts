@@ -1,6 +1,6 @@
 import { SharedService } from '../shared/shared.service';
 import { User } from './models/user.model';
-import { Injectable, Inject, forwardRef, HttpException, HttpStatus } from '@nestjs/common';
+import { Injectable, Inject, forwardRef, HttpStatus, InternalServerErrorException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { USER_MODEL } from './schema/user.schema';
 import { Model } from 'mongoose';
@@ -23,10 +23,12 @@ export class UserService extends SharedService<User> {
     }
 
     async register(registerParams: RegisterParams): Promise<User> {
-        const { username, password } = registerParams;
+        const { username, password, firstName, lastName } = registerParams;
 
         const newUser: User = new this._userModel();
         newUser.username = username.toLowerCase();
+        newUser.firstName = firstName;
+        newUser.lastName = lastName;
 
         const salt = await genSalt(10);
         newUser.password = await hash(password, salt);
@@ -35,7 +37,7 @@ export class UserService extends SharedService<User> {
             const result = await this.create(newUser);
             return this.getById(result._id);
         } catch (e) {
-            throw new HttpException('Error registering', HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new InternalServerErrorException(e);
         }
     }
 

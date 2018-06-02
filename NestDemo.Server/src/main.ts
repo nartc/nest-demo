@@ -4,6 +4,7 @@ import { AppModule } from './app.module';
 
 import * as helmet from 'helmet';
 import { Request, Response } from 'express';
+import { HttpExceptionFilter } from './shared/filters/http-exception.filter';
 declare const module: any;
 
 async function bootstrap() {
@@ -56,6 +57,11 @@ async function bootstrap() {
             docExpansion: 'none',
         },
     });
+
+    /**
+     * *Filters, Pipes, Guards
+     */
+    app.useGlobalFilters(new HttpExceptionFilter());
 
     await app.listen(AppModule.port);
 

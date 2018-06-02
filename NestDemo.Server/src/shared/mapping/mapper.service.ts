@@ -17,6 +17,7 @@ export class MapperService {
     private static config(config: AutoMapperJs.IConfiguration): void {
         config
             .createMap('User', 'UserVm')
+            .forSourceMember('_id', (opts: AutoMapperJs.ISourceMemberConfigurationOptions) => opts.ignore())
             .forSourceMember('password', (opts: AutoMapperJs.ISourceMemberConfigurationOptions) => opts.ignore());
     }
 }

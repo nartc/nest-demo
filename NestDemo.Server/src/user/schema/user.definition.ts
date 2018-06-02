@@ -6,12 +6,12 @@ export const UserDefinition: SchemaDefinition = {
         type: String,
         required: [true, 'Username is required'],
         unique: true,
-        minlength: [6, 'Username must be at least 6 characters'],
+        minlength: [6, '{VALUE} must be at least 6 characters'],
     },
     password: {
         type: String,
         required: [true, 'Password is required'],
-        minlength: [6, 'Password must be at least 6 characters'],
+        minlength: [6, '{VALUE} must be at least 6 characters'],
     },
     role: {
         type: String,
