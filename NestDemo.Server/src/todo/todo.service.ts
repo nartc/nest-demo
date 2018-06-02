@@ -8,10 +8,7 @@ import { MapperService } from '../shared/mapping/mapper.service';
 
 @Injectable()
 export class TodoService extends SharedService<Todo> {
-    constructor(
-        @InjectModel(TODO_MODEL) private readonly _todoModel: Model<Todo>,
-        private readonly _mapperService: MapperService,
-    ) {
+    constructor(@InjectModel(TODO_MODEL) private readonly _todoModel: Model<Todo>) {
         super(_todoModel);
     }
 }

@@ -58,7 +58,11 @@ export class UserController {
         if (user) throw new BadRequestException(`${username} is already existed`);
 
         const newUser: User = await this._userService.register(registerParams);
-        return this._mapperService.mapper.map('User', 'UserVm', newUser.toJSON());
+        return this._mapperService.mapper.map(
+            this._userService.modelName,
+            this._userService.viewModelName,
+            newUser.toJSON(),
+        );
     }
 
     @Post('login')

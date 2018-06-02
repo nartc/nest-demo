@@ -42,7 +42,7 @@ export class UserService extends SharedService<User> {
     }
 
     async login(user: User): Promise<LoginResponse> {
-        const fetchedUser: UserVm = this._mapperService.mapper.map('User', 'UserVm', user.toJSON());
+        const fetchedUser: UserVm = this._mapperService.mapper.map(this.modelName, this.viewModelName, user.toJSON());
         const payload = { user: fetchedUser };
         const token = await this._authService.signPayload(payload);
 
