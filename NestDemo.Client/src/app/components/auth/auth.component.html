@@ -1,0 +1,14 @@
+<div class="container">
+  <mat-tab-group class="mt-2 mx-auto">
+    <mat-tab label="Sign Up" *ngIf="!isLoggedIn">
+      <app-signup></app-signup>
+    </mat-tab>
+    <mat-tab label="Sign In" *ngIf="!isLoggedIn">
+      <app-signin></app-signin>
+    </mat-tab>
+    <mat-tab label="Profile" *ngIf="isLoggedIn">
+      <app-profile></app-profile>
+    </mat-tab>
+  </mat-tab-group>
+</div>
+
