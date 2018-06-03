@@ -1,6 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { HttpService } from '../../services/http.service';
+import { catchError, filter } from 'rxjs/operators';
+import { of } from 'rxjs/internal/observable/of';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-signin',
@@ -8,11 +11,13 @@ import { HttpService } from '../../services/http.service';
   styleUrls: ['./signin.component.scss'],
 })
 export class SigninComponent implements OnInit {
+  @Output() onLoginSuccess: EventEmitter<any> = new EventEmitter<any>();
 
   form: FormGroup;
 
   constructor(private _fb: FormBuilder,
-              private _httpService: HttpService) {
+              private _httpService: HttpService,
+              private _snackbar: MatSnackBar) {
   }
 
   ngOnInit() {
@@ -29,8 +34,20 @@ export class SigninComponent implements OnInit {
   submit() {
     const body = { ...this.form.value };
     this._httpService.post('users/login', body, { 'Content-type': 'application/json' })
+      .pipe(
+        catchError((err) => {
+          console.error(err);
+          this.openSnackbar(err.error.message.message ? err.error.message.message : err.error.message);
+          this.onLoginSuccess.emit(null);
+          return of(null);
+        }),
+        filter(data => !!data),
+      )
       .subscribe((data) => {
-        console.log(data);
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('user', JSON.stringify(data.user));
+        this.openSnackbar('Login Successfully');
+        this.onLoginSuccess.emit(data);
       });
   }
 
@@ -42,4 +59,7 @@ export class SigninComponent implements OnInit {
     return this.form.controls[control] as FormControl;
   }
 
+  private openSnackbar(message: string) {
+    this._snackbar.open(message, '', { duration: 1000 });
+  }
 }
