@@ -17,7 +17,7 @@
                 <app-auth (onAuthStateChanged)="onAuthStateChangedHandler($event)"></app-auth>
               </mat-tab>
               <mat-tab label="Todo List" [disabled]="!isAuth">
-                <app-todos></app-todos>
+                <app-todos [authState]="isAuth"></app-todos>
               </mat-tab>
             </mat-tab-group>
           </mat-card-content>

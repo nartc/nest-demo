@@ -25,9 +25,10 @@ import { Request } from 'express';
 import { RolesGuard } from '../shared/guards/roles.guard';
 import { Roles } from '../shared/decorators/roles.decorator';
 import { UserRole } from '../user/models/user-role.enum';
+import { TodoParams } from './models/todo-params.model';
 
 @Controller('todos')
-@UseGuards(AuthGuard('jwt'))
+@UseGuards(AuthGuard('jwt'), RolesGuard)
 @ApiUseTags('Todo')
 @ApiBearerAuth()
 export class TodoController {
@@ -37,7 +38,6 @@ export class TodoController {
     @Post('create')
     @HttpCode(200)
     @Roles(UserRole.Admin)
-    @UseGuards(RolesGuard)
     @ApiResponse({
         status: HttpStatus.OK,
         description: 'Create todo successful',
@@ -57,10 +57,10 @@ export class TodoController {
         title: 'POST Create new Todo',
         operationId: 'Todo_CreateTodo',
     })
-    async createTodo(@Body('content') content: string): Promise<TodoVm> {
+    async createTodo(@Body() todoParams: TodoParams): Promise<TodoVm> {
         let todo: Todo;
         try {
-            todo = await this._todoService.createFromRequestBody(content);
+            todo = await this._todoService.createFromRequestBody(todoParams);
         } catch (e) {
             throw new InternalServerErrorException(e);
         }
