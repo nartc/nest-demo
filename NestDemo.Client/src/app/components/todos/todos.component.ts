@@ -65,7 +65,7 @@ export class TodosComponent implements OnInit, OnChanges {
         this.currentEditingTodo = null;
       });
     } else {
-      this._httpService.post('todos/create?' + `content=${body.content}`, null, {
+      this._httpService.post('todos/create', body, {
         'Content-type': 'application/json',
         'Authorization': `Bearer ${this.token}`,
       }).pipe(
@@ -121,7 +121,7 @@ export class TodosComponent implements OnInit, OnChanges {
         filter(data => !!data),
       ).subscribe((data) => {
         this.todos.splice(this.todos.indexOf(this.todos.find(todo => todo.id === data.id)), 1);
-        this.todos = sortBy(data, ['isCompleted']);
+        this.todos = sortBy(this.todos, ['isCompleted']);
       });
     }
   }
