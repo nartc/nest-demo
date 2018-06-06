@@ -20,11 +20,12 @@ export class TodosComponent implements OnInit, OnChanges {
   todos: any[];
   currentEditingTodo: any;
 
-  constructor(private _httpService: HttpService,
-              private _snackbar: MatSnackBar,
-              private _fb: FormBuilder,
-              private _socketService: SocketService) {
-  }
+  constructor(
+    private _httpService: HttpService,
+    private _snackbar: MatSnackBar,
+    private _fb: FormBuilder,
+    private _socketService: SocketService
+  ) {}
 
   ngOnInit() {
     this.initSocket();
@@ -42,7 +43,7 @@ export class TodosComponent implements OnInit, OnChanges {
 
     this._socketService.onReloadData().subscribe(data => {
       if (data) {
-          this.loadTodos();
+        this.loadTodos();
       }
     });
   }
@@ -61,42 +62,46 @@ export class TodosComponent implements OnInit, OnChanges {
     if (this.currentEditingTodo) {
       this.currentEditingTodo.content = this.form.value.content;
 
-      this._httpService.put('todos', this.currentEditingTodo, {
-        'Content-type': 'application/json',
-        'Authorization': `Bearer ${this.token}`,
-      }).pipe(
-        catchError((err) => {
-          console.error(err);
-          this._snackbar.open(err.error.message, '', { duration: 1000 });
-          return of(null);
-        }),
-        filter(data => !!data),
-      ).subscribe((data) => {
-        this.todos.splice(this.todos.indexOf(this.todos.find(todo => todo.id === data.id)), 1, data);
-        this.form.reset();
-        this.form.controls['content'].setValue('');
-        this.todos = sortBy(this.todos, ['isCompleted']);
-        this.currentEditingTodo = null;
-        this._snackbar.open(`${data.content} has been updated`, '', { duration: 1000 });
-      });
+      this._httpService
+        .put('todos', this.currentEditingTodo, {
+          'Content-type': 'application/json',
+          Authorization: `Bearer ${this.token}`,
+        })
+        .pipe(
+          catchError(err => {
+            console.error(err);
+            this.openSnackbar(err.error.message);
+            return of(null);
+          }),
+          filter(data => !!data)
+        )
+        .subscribe(data => {
+          this.todos.splice(this.todos.indexOf(this.todos.find(todo => todo.id === data.id)), 1, data);
+          this.resetForm();
+          this.todos = sortBy(this.todos, ['isCompleted']);
+          this.currentEditingTodo = null;
+          this.openSnackbar(`${data.content} has been updated`);
+        });
     } else {
-      this._httpService.post('todos/create', body, {
-        'Content-type': 'application/json',
-        'Authorization': `Bearer ${this.token}`,
-      }).pipe(
-        catchError((err) => {
-          console.error(err);
-          this._snackbar.open(err.error.message, '', { duration: 1000 });
-          return of(null);
-        }),
-        filter(data => !!data),
-      ).subscribe((data) => {
-        this.todos.push(data);
-        this.form.reset();
-        this.form.controls['content'].setValue('');
-        this.todos = sortBy(this.todos, ['isCompleted']);
-        this._snackbar.open(`${data.content} has been added`, '', { duration: 1000 });
-      });
+      this._httpService
+        .post('todos/create', body, {
+          'Content-type': 'application/json',
+          Authorization: `Bearer ${this.token}`,
+        })
+        .pipe(
+          catchError(err => {
+            console.error(err);
+            this.openSnackbar(err.error.message);
+            return of(null);
+          }),
+          filter(data => !!data)
+        )
+        .subscribe(data => {
+          this.todos.push(data);
+          this.resetForm();
+          this.todos = sortBy(this.todos, ['isCompleted']);
+          this.openSnackbar(`${data.content} has been added`);
+        });
     }
   }
 
@@ -108,39 +113,45 @@ export class TodosComponent implements OnInit, OnChanges {
   }
 
   loadTodos() {
-    this._httpService.get('todos', {
-      'Content-type': 'application/json',
-      'Authorization': `Bearer ${this.token}`,
-    }).pipe(
-      catchError((err) => {
-        console.error(err);
-        this._snackbar.open(err.error.statusCode === 401 ? err.error.message.error : err.error.message, '', { duration: 1000 });
-        return of(null);
-      }),
-      filter(data => !!data),
-    ).subscribe((data) => {
-      console.log(data);
-      this.todos = sortBy(data, ['isCompleted']);
-    });
+    this._httpService
+      .get('todos', {
+        'Content-type': 'application/json',
+        Authorization: `Bearer ${this.token}`,
+      })
+      .pipe(
+        catchError(err => {
+          console.error(err);
+          this.openSnackbar(err.error.statusCode === 401 ? err.error.message.error : err.error.message);
+          return of(null);
+        }),
+        filter(data => !!data)
+      )
+      .subscribe(data => {
+        console.log(data);
+        this.todos = sortBy(data, ['isCompleted']);
+      });
   }
 
   onRemoveClickedHandler(todoId: string) {
     if (confirm('Are you sure?')) {
-      this._httpService.delete(`todos/${todoId}`, {
-        'Content-type': 'application/json',
-        'Authorization': `Bearer ${this.token}`,
-      }).pipe(
-        catchError((err) => {
-          console.error(err);
-          this._snackbar.open(err.error.statusCode === 401 ? err.error.message.error : err.error.message, '', { duration: 1000 });
-          return of(null);
-        }),
-        filter(data => !!data),
-      ).subscribe((data) => {
-        this.todos.splice(this.todos.indexOf(this.todos.find(todo => todo.id === data.id)), 1);
-        this.todos = sortBy(this.todos, ['isCompleted']);
-        this._snackbar.open(`${data.content} has been removed`, '', { duration: 1000 });
-      });
+      this._httpService
+        .delete(`todos/${todoId}`, {
+          'Content-type': 'application/json',
+          Authorization: `Bearer ${this.token}`,
+        })
+        .pipe(
+          catchError(err => {
+            console.error(err);
+            this.openSnackbar(err.error.statusCode === 401 ? err.error.message.error : err.error.message);
+            return of(null);
+          }),
+          filter(data => !!data)
+        )
+        .subscribe(data => {
+          this.todos.splice(this.todos.indexOf(this.todos.find(todo => todo.id === data.id)), 1);
+          this.todos = sortBy(this.todos, ['isCompleted']);
+          this.openSnackbar(`${data.content} has been removed`);
+        });
     }
   }
 
@@ -161,21 +172,33 @@ export class TodosComponent implements OnInit, OnChanges {
   onStatusChangedHandler(todoId: string) {
     this.currentEditingTodo = this.todos.find(todo => todo.id === todoId);
     this.currentEditingTodo.isCompleted = true;
-    this._httpService.put('todos', this.currentEditingTodo, {
-      'Content-type': 'application/json',
-      'Authorization': `Bearer ${this.token}`,
-    }).pipe(
-      catchError((err) => {
-        console.error(err);
-        this._snackbar.open(err.error.message, '', { duration: 1000 });
-        return of(null);
-      }),
-      filter(data => !!data),
-    ).subscribe((data) => {
-      this.todos.splice(this.todos.indexOf(this.todos.find(todo => todo.id === data.id)), 1, data);
-      this.todos = sortBy(this.todos, ['isCompleted']);
-      this.currentEditingTodo = null;
-      this._snackbar.open(`${data.content} has been completed`, '', { duration: 1000 });
-    });
+    this._httpService
+      .put('todos', this.currentEditingTodo, {
+        'Content-type': 'application/json',
+        Authorization: `Bearer ${this.token}`,
+      })
+      .pipe(
+        catchError(err => {
+          console.error(err);
+          this.openSnackbar(err.error.message);
+          return of(null);
+        }),
+        filter(data => !!data)
+      )
+      .subscribe(data => {
+        this.todos.splice(this.todos.indexOf(this.todos.find(todo => todo.id === data.id)), 1, data);
+        this.todos = sortBy(this.todos, ['isCompleted']);
+        this.currentEditingTodo = null;
+        this.openSnackbar(`${data.content} has been completed`);
+      });
+  }
+
+  private openSnackbar(message: string) {
+    this._snackbar.open(message, '', { duration: 1000 });
+  }
+
+  private resetForm() {
+    this.form.reset();
+    this.form.controls['content'].setValue('');
   }
 }

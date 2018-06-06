@@ -42,9 +42,7 @@ export class SignupComponent implements OnInit {
         catchError((err) => {
           console.error(err);
           this.form.reset();
-          this._snackbar.open(err.error.message.message ? err.error.message.message : err.error.message, '', {
-            duration: 1000,
-          });
+        this.openSnackbar(err.error.message.message ? err.error.message.message : err.error.message);
           this.onSignupSuccess.emit(false);
           return of(null);
         }),
@@ -52,9 +50,7 @@ export class SignupComponent implements OnInit {
       )
       .subscribe((data) => {
         this.onSignupSuccess.emit(true);
-        this._snackbar.open('Registered successfully', '', {
-          duration: 1000,
-        });
+        this.openSnackbar('Registered successfully');
         this.form.reset();
       });
   }
@@ -65,5 +61,9 @@ export class SignupComponent implements OnInit {
 
   getFormControl(control: string): FormControl {
     return this.form.controls[control] as FormControl;
+  }
+
+  private openSnackbar(message: string) {
+    this._snackbar.open(message, '', { duration: 1000 });
   }
 }
