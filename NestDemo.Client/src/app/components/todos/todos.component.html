@@ -4,7 +4,7 @@
       <mat-form-field class="w-50 mr-3">
         <input type="text" matInput formControlName="content" placeholder="Todo content">
       </mat-form-field>
-      <button mat-raised-button color="primary" class="text-center mx-2" [disabled]="form.invalid"
+      <button mat-raised-button color="primary" class="text-center mx-2" [disabled]="!form.controls['content'].value"
               type="submit">Save
       </button>
       <button mat-raised-button color="warn" class="text-center mx-2" [disabled]="!form.controls['content'].value"

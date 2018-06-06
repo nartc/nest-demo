@@ -4,7 +4,8 @@ import { catchError, filter } from 'rxjs/operators';
 import { of } from 'rxjs/internal/observable/of';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { sortBy } from 'lodash';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup } from '@angular/forms';
+import { SocketService } from '../../services/socket.service';
 
 @Component({
   selector: 'app-todos',
@@ -21,10 +22,13 @@ export class TodosComponent implements OnInit, OnChanges {
 
   constructor(private _httpService: HttpService,
               private _snackbar: MatSnackBar,
-              private _fb: FormBuilder) {
+              private _fb: FormBuilder,
+              private _socketService: SocketService) {
   }
 
   ngOnInit() {
+    this.initSocket();
+
     if (this.authState) {
       this.token = localStorage.getItem('token');
       this.loadTodos();
@@ -33,9 +37,19 @@ export class TodosComponent implements OnInit, OnChanges {
     this.initForm();
   }
 
+  private initSocket() {
+    this._socketService.initSocket();
+
+    this._socketService.onReloadData().subscribe(data => {
+      if (data) {
+          this.loadTodos();
+      }
+    });
+  }
+
   private initForm() {
     this.form = this._fb.group({
-      content: ['', Validators.required],
+      content: [''],
     });
   }
 
@@ -63,6 +77,7 @@ export class TodosComponent implements OnInit, OnChanges {
         this.form.controls['content'].setValue('');
         this.todos = sortBy(this.todos, ['isCompleted']);
         this.currentEditingTodo = null;
+        this._snackbar.open(`${data.content} has been updated`, '', { duration: 1000 });
       });
     } else {
       this._httpService.post('todos/create', body, {
@@ -80,6 +95,7 @@ export class TodosComponent implements OnInit, OnChanges {
         this.form.reset();
         this.form.controls['content'].setValue('');
         this.todos = sortBy(this.todos, ['isCompleted']);
+        this._snackbar.open(`${data.content} has been added`, '', { duration: 1000 });
       });
     }
   }
@@ -103,6 +119,7 @@ export class TodosComponent implements OnInit, OnChanges {
       }),
       filter(data => !!data),
     ).subscribe((data) => {
+      console.log(data);
       this.todos = sortBy(data, ['isCompleted']);
     });
   }
@@ -122,6 +139,7 @@ export class TodosComponent implements OnInit, OnChanges {
       ).subscribe((data) => {
         this.todos.splice(this.todos.indexOf(this.todos.find(todo => todo.id === data.id)), 1);
         this.todos = sortBy(this.todos, ['isCompleted']);
+        this._snackbar.open(`${data.content} has been removed`, '', { duration: 1000 });
       });
     }
   }
@@ -157,6 +175,7 @@ export class TodosComponent implements OnInit, OnChanges {
       this.todos.splice(this.todos.indexOf(this.todos.find(todo => todo.id === data.id)), 1, data);
       this.todos = sortBy(this.todos, ['isCompleted']);
       this.currentEditingTodo = null;
+      this._snackbar.open(`${data.content} has been completed`, '', { duration: 1000 });
     });
   }
 }

@@ -8,10 +8,12 @@ import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { AppRoutingModule } from './app-routing.module';
 import { TodoModule } from './todo/todo.module';
+import { SocketModule } from './socket/socket.module';
 
 @Module({
     imports: [
         SharedModule,
+        SocketModule,
         AppRoutingModule,
         MongooseModule.forRoot(ConfigService.connectionString),
         AuthModule,

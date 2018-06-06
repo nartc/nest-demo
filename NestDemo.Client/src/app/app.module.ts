@@ -13,6 +13,7 @@ import { SigninComponent } from './components/signin/signin.component';
 import { ProfileComponent } from './components/profile/profile.component';
 import { TodosComponent } from './components/todos/todos.component';
 import { TodoListComponent } from './components/todo-list/todo-list.component';
+import { SocketService } from './services/socket.service';
 
 @NgModule({
   declarations: [
@@ -33,7 +34,7 @@ import { TodoListComponent } from './components/todo-list/todo-list.component';
     ReactiveFormsModule,
     MaterialImportModule,
   ],
-  providers: [],
+  providers: [SocketService],
   bootstrap: [AppComponent],
 })
 export class AppModule {

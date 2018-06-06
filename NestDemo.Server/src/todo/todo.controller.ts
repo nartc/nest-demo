@@ -26,13 +26,16 @@ import { RolesGuard } from '../shared/guards/roles.guard';
 import { Roles } from '../shared/decorators/roles.decorator';
 import { UserRole } from '../user/models/user-role.enum';
 import { TodoParams } from './models/todo-params.model';
+import { SocketGateway } from '../socket/socket.gateway';
 
 @Controller('todos')
 @UseGuards(AuthGuard('jwt'), RolesGuard)
 @ApiUseTags('Todo')
 @ApiBearerAuth()
 export class TodoController {
-    constructor(private readonly _todoService: TodoService, private readonly _mapperService: MapperService) {
+    constructor(private readonly _todoService: TodoService,
+                private readonly _mapperService: MapperService,
+                private _socketGateway: SocketGateway) {
     }
 
     @Post('create')
@@ -64,6 +67,8 @@ export class TodoController {
         } catch (e) {
             throw new InternalServerErrorException(e);
         }
+
+        this._socketGateway.server.emit('onReload', true);
         return this._mapperService.mapper.map(
             this._todoService.modelName,
             this._todoService.viewModelName,
@@ -131,6 +136,7 @@ export class TodoController {
     async deleteTodo(@Param('id') id: string): Promise<TodoVm> {
         try {
             const todo: Todo = await this._todoService.delete(id);
+            this._socketGateway.server.emit('onReload', true);
             return this._mapperService.mapper.map(
                 this._todoService.modelName,
                 this._todoService.viewModelName,
@@ -202,6 +208,7 @@ export class TodoController {
 
         try {
             const updated: Todo = await this._todoService.updateFromRequestBody(todo);
+            this._socketGateway.server.emit('onReload', true);
             return this._mapperService.mapper.map(
                 this._todoService.modelName,
                 this._todoService.viewModelName,
