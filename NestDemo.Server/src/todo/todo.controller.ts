@@ -1,13 +1,11 @@
 import {
-    BadRequestException,
     Body,
     Controller,
     Delete,
     Get,
     HttpCode,
+    HttpException,
     HttpStatus,
-    InternalServerErrorException,
-    NotFoundException,
     Param,
     Post,
     Put,
@@ -35,7 +33,7 @@ import { SocketGateway } from '../socket/socket.gateway';
 export class TodoController {
     constructor(private readonly _todoService: TodoService,
                 private readonly _mapperService: MapperService,
-                private _socketGateway: SocketGateway) {
+                private readonly _socketGateway: SocketGateway) {
     }
 
     @Post('create')
@@ -57,7 +55,7 @@ export class TodoController {
         type: ApiException,
     })
     @ApiOperation({
-        title: 'POST Create new Todo',
+        title: 'POST Create New Todo',
         operationId: 'Todo_CreateTodo',
     })
     async createTodo(@Body() todoParams: TodoParams): Promise<TodoVm> {
@@ -65,7 +63,7 @@ export class TodoController {
         try {
             todo = await this._todoService.createFromRequestBody(todoParams);
         } catch (e) {
-            throw new InternalServerErrorException(e);
+            throw new HttpException(e, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         this._socketGateway.server.emit('onReload', true);
@@ -102,7 +100,7 @@ export class TodoController {
         try {
             todos = await this._todoService.getAll();
         } catch (e) {
-            throw new InternalServerErrorException(e);
+            throw new HttpException(e, HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return this._mapperService.mapper.map(
             `${this._todoService.modelName}[]`,
@@ -143,7 +141,7 @@ export class TodoController {
                 todo.toJSON(),
             );
         } catch (e) {
-            throw new InternalServerErrorException(e);
+            throw new HttpException(e, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -176,7 +174,7 @@ export class TodoController {
                 todo.toJSON(),
             );
         } catch (e) {
-            throw new InternalServerErrorException(e);
+            throw new HttpException(e, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -203,8 +201,8 @@ export class TodoController {
     })
     async updateTodo(@Body() todo: TodoVm): Promise<TodoVm> {
         const existed: Todo = await this._todoService.getById(todo.id);
-        if (!existed) throw new NotFoundException(`Not found ${todo.id}`);
-        if (existed.isCompleted) throw new BadRequestException('Todo already completed');
+        if (!existed) throw new HttpException(`Not found ${todo.id}`, HttpStatus.NOT_FOUND);
+        if (existed.isCompleted) throw new HttpException('Todo already completed', HttpStatus.BAD_REQUEST);
 
         try {
             const updated: Todo = await this._todoService.updateFromRequestBody(todo);
@@ -215,7 +213,7 @@ export class TodoController {
                 updated.toJSON(),
             );
         } catch (e) {
-            throw new InternalServerErrorException(e);
+            throw new HttpException(e, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

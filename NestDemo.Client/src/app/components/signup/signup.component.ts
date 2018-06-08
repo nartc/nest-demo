@@ -4,6 +4,7 @@ import { HttpService } from '../../services/http.service';
 import { catchError, filter } from 'rxjs/operators';
 import { of } from 'rxjs/internal/observable/of';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { ApiException, RegisterParams, UserClient, UserVm } from '../../app.api';
 
 @Component({
   selector: 'app-signup',
@@ -17,7 +18,8 @@ export class SignupComponent implements OnInit {
 
   constructor(private _fb: FormBuilder,
               private _httpService: HttpService,
-              private _snackbar: MatSnackBar) {
+              private _snackbar: MatSnackBar,
+              private _userClientService: UserClient) {
   }
 
   ngOnInit() {
@@ -34,25 +36,23 @@ export class SignupComponent implements OnInit {
   }
 
   submit() {
-    const body = {
-      ...this.form.value,
-    };
-    this._httpService.post('users/register', body, { 'Content-Type': 'application/json' })
+    const registerParams: RegisterParams = new RegisterParams({ ...this.form.value });
+    this._userClientService.register(registerParams)
       .pipe(
-        catchError((err) => {
+        catchError((err: ApiException) => {
           console.error(err);
           this.form.reset();
-        this.openSnackbar(err.error.message.message ? err.error.message.message : err.error.message);
           this.onSignupSuccess.emit(false);
+          this.openSnackbar(err.message);
           return of(null);
         }),
-        filter((data) => !!data),
-      )
-      .subscribe((data) => {
-        this.onSignupSuccess.emit(true);
-        this.openSnackbar('Registered successfully');
-        this.form.reset();
-      });
+        filter(data => !!data),
+      ).subscribe((user: UserVm) => {
+      console.log(user);
+      this.onSignupSuccess.emit(true);
+      this.openSnackbar('Registered successfully');
+      this.form.reset();
+    });
   }
 
   getErrorMessage(control: string) {

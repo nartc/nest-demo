@@ -1,6 +1,6 @@
 import { SharedService } from '../shared/shared.service';
 import { User } from './models/user.model';
-import { Injectable, Inject, forwardRef, HttpStatus, InternalServerErrorException } from '@nestjs/common';
+import { forwardRef, HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { USER_MODEL } from './schema/user.schema';
 import { Model } from 'mongoose';
@@ -8,7 +8,7 @@ import { MapperService } from '../shared/mapping/mapper.service';
 import { AuthService } from '../auth/auth.service';
 import { LoginResponse } from './models/login-response.model';
 import { RegisterParams } from './models/register-params.model';
-import { genSalt, hash, compare } from 'bcryptjs';
+import { compare, genSalt, hash } from 'bcryptjs';
 import { UserVm } from './models/user-vm.model';
 import { JwtPayload } from '../auth/jwt-payload.model';
 
@@ -38,7 +38,7 @@ export class UserService extends SharedService<User> {
             const result = await this.create(newUser);
             return this.getById(result._id);
         } catch (e) {
-            throw new InternalServerErrorException(e);
+            throw new HttpException(e, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

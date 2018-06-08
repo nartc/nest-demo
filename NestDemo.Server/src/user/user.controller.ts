@@ -1,13 +1,5 @@
-import {
-    Controller,
-    Post,
-    Body,
-    HttpCode,
-    HttpStatus,
-    InternalServerErrorException,
-    BadRequestException,
-} from '@nestjs/common';
-import { ApiUseTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
+import { Body, Controller, HttpCode, HttpException, HttpStatus, Post } from '@nestjs/common';
+import { ApiOperation, ApiResponse, ApiUseTags } from '@nestjs/swagger';
 import { UserService } from './user.service';
 import { MapperService } from '../shared/mapping/mapper.service';
 import { UserVm } from './models/user-vm.model';
@@ -20,7 +12,8 @@ import { LoginParams } from './models/login-params.model';
 @Controller('users')
 @ApiUseTags('User')
 export class UserController {
-    constructor(private readonly _userService: UserService, private readonly _mapperService: MapperService) {}
+    constructor(private readonly _userService: UserService, private readonly _mapperService: MapperService) {
+    }
 
     @Post('register')
     @HttpCode(200)
@@ -45,17 +38,17 @@ export class UserController {
     })
     async register(@Body() registerParams: RegisterParams): Promise<UserVm> {
         const { username, password } = registerParams;
-        if (!username || !password) throw new BadRequestException('Username/Password is required');
+        if (!username || !password) throw new HttpException('Username/Password is required', HttpStatus.BAD_REQUEST);
 
         let user: User;
 
         try {
             user = await this._userService.getOne(username.toLowerCase(), 'username');
         } catch (e) {
-            throw new InternalServerErrorException(e);
+            throw new HttpException(e, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        if (user) throw new BadRequestException(`${username} is already existed`);
+        if (user) throw new HttpException(`${username} is already existed`, HttpStatus.BAD_REQUEST);
 
         const newUser: User = await this._userService.register(registerParams);
         return this._mapperService.mapper.map(
@@ -89,21 +82,21 @@ export class UserController {
     async login(@Body() loginParams: LoginParams): Promise<LoginResponse> {
         const { username, password } = loginParams;
 
-        if (!username || !password) throw new BadRequestException('Username/Password is required');
+        if (!username || !password) throw new HttpException('Username/Password is required', HttpStatus.BAD_REQUEST);
 
         let user: User;
 
         try {
             user = await this._userService.getOne(username.toLowerCase(), 'username');
         } catch (e) {
-            throw new InternalServerErrorException(e);
+            throw new HttpException(e, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        if (!user) throw new BadRequestException('Invalid credentials');
+        if (!user) throw new HttpException('Invalid credentials', HttpStatus.BAD_REQUEST);
 
         const isMatched: boolean = await this._userService.comparePassword(user.password, password);
 
-        if (!isMatched) throw new BadRequestException('Invalid credentials');
+        if (!isMatched) throw new HttpException('Invalid credentials', HttpStatus.BAD_REQUEST);
 
         return this._userService.login(user);
     }
