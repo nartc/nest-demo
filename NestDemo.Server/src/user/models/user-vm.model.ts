@@ -13,4 +13,6 @@ export class UserVm extends SharedModelVm {
     @ApiModelPropertyOptional() lastName?: string;
 
     @ApiModelPropertyOptional() fullName?: string;
+
+    @ApiModelPropertyOptional() avatar?: string;
 }

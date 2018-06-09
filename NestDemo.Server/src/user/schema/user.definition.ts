@@ -24,5 +24,8 @@ export const UserDefinition: SchemaDefinition = {
     lastName: {
         type: String,
     },
+    avatar: {
+        type: String,
+    },
     ...SharedDefinition,
 };

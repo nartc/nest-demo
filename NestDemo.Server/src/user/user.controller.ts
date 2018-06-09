@@ -1,5 +1,15 @@
-import { Body, Controller, HttpCode, HttpException, HttpStatus, Post } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiUseTags } from '@nestjs/swagger';
+import {
+    Body,
+    Controller,
+    FileInterceptor,
+    HttpCode,
+    HttpException,
+    HttpStatus,
+    Post,
+    UploadedFile,
+    UseInterceptors,
+} from '@nestjs/common';
+import { ApiConsumes, ApiOperation, ApiResponse, ApiUseTags } from '@nestjs/swagger';
 import { UserService } from './user.service';
 import { MapperService } from '../shared/mapping/mapper.service';
 import { UserVm } from './models/user-vm.model';
@@ -8,6 +18,7 @@ import { RegisterParams } from './models/register-params.model';
 import { ApiException } from '../shared/shared.model';
 import { User } from './models/user.model';
 import { LoginParams } from './models/login-params.model';
+import { FileParams } from './models/file-params.model';
 
 @Controller('users')
 @ApiUseTags('User')
@@ -99,5 +110,32 @@ export class UserController {
         if (!isMatched) throw new HttpException('Invalid credentials', HttpStatus.BAD_REQUEST);
 
         return this._userService.login(user);
+    }
+
+    @Post('upload')
+    @HttpCode(200)
+    @ApiResponse({
+        status: HttpStatus.OK,
+        description: 'Upload successful',
+        type: UserVm,
+    })
+    @ApiResponse({
+        status: HttpStatus.BAD_REQUEST,
+        description: 'Bad request',
+        type: ApiException,
+    })
+    @ApiResponse({
+        status: HttpStatus.INTERNAL_SERVER_ERROR,
+        description: 'Unexpected Server error occurred',
+        type: ApiException,
+    })
+    @ApiOperation({
+        title: 'POST Upload Avatar',
+        operationId: 'User_Upload',
+    })
+    @UseInterceptors(FileInterceptor('file'))
+    async upload(@UploadedFile() file: FileParams): Promise<UserVm> {
+        console.log(file);
+        return;
     }
 }

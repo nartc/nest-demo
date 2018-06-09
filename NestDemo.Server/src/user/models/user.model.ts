@@ -8,4 +8,5 @@ export interface User extends SharedModel {
     firstName?: string;
     lastName?: string;
     fullName?: string;
+    avatar?: string;
 }
