@@ -29,14 +29,16 @@ export class AppModule {
      */
     public static port: number | string;
     public static host: string;
+    public static isDev: boolean;
 
     /**
      * Grab HOST and PORT from Config Variables
      * @param {ConfigService} _configService
      */
     constructor(private readonly _configService: ConfigService) {
-        AppModule.port = AppModule.normalizePort(this._configService.getConfigVariable(ConfigVar.PORT));
-        AppModule.host = this._configService.getConfigVariable(ConfigVar.HOST);
+        AppModule.port = AppModule.normalizePort(_configService.getConfigVariable(ConfigVar.PORT));
+        AppModule.host = _configService.getConfigVariable(ConfigVar.HOST);
+        AppModule.isDev = _configService.isDevelopment;
     }
 
     /**

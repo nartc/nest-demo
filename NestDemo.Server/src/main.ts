@@ -10,16 +10,11 @@ declare const module: any;
 
 async function bootstrap() {
     /**
-     * Get HostDomain from NODE_ENV
-     */
-    const isDev = process.env.NODE_ENV ? 'production' : 'development';
-
-    /**
      * Create Application instance from AppModule
      * @type {INestApplication & INestExpressApplication}
      */
     const app = await NestFactory.create(AppModule, { cors: true });
-    const hostDomain = isDev === 'development' ? `${AppModule.host}:${AppModule.port.toString()}` : AppModule.host;
+    const hostDomain = AppModule.isDev ? `${AppModule.host}:${AppModule.port.toString()}` : AppModule.host;
 
     app.use(helmet());
 

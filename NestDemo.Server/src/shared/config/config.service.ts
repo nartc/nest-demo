@@ -9,10 +9,7 @@ export class ConfigService {
      * @type {string}
      */
     static connectionString: string = process.env[ConfigVar.MONGO_URI] || get(ConfigVar.MONGO_URI);
-
-    constructor() {
-        ConfigService.connectionString = this.getConfigVariable(ConfigVar.MONGO_URI);
-    }
+    private devEnvironment: string = process.env.NODE_ENV ? 'production' : 'development';
 
     /**
      * Method to return specific config variable using the constants from config.constant.ts.
@@ -22,5 +19,9 @@ export class ConfigService {
      */
     getConfigVariable(name: string): string {
         return process.env[name] || get(name);
+    }
+
+    get isDevelopment(): boolean {
+        return this.devEnvironment === 'development';
     }
 }

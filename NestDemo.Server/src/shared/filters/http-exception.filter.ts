@@ -8,16 +8,17 @@ export class HttpExceptionFilter implements ExceptionFilter {
         const req = ctx.getRequest();
 
         if (error.getStatus() === HttpStatus.UNAUTHORIZED) {
-            error.response['message'] = error.response.message ? error.response.message : 'You do not have permission to access this resource';
+            error.response['message'] = error.response.message || 'You do not have permission to access this resource';
         }
 
-        res.status(error.getStatus()).json({
-            statusCode: error.getStatus(),
-            error: error.response.name ? error.response.name : error.name,
-            message: error.response.message ? error.response.message : error.message,
-            errors: error.response.errors ? error.response.errors : null,
-            timestamp: new Date().toISOString(),
-            path: req ? req.url : null,
-        });
+        res.status(error.getStatus())
+            .json({
+                statusCode: error.getStatus(),
+                error: error.response.name || error.name,
+                message: error.response.message || error.message,
+                errors: error.response.errors || null,
+                timestamp: new Date().toISOString(),
+                path: req ? req.url : null,
+            });
     }
 }

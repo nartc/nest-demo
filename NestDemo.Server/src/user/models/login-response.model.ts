@@ -4,8 +4,6 @@ import { ApiModelProperty } from '@nestjs/swagger';
 export class LoginResponse {
     @ApiModelProperty() token: string;
 
-    @ApiModelProperty({
-        type: UserVm,
-    })
+    @ApiModelProperty({ type: UserVm })
     user: UserVm;
 }

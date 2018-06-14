@@ -1,5 +1,4 @@
-import { Module, forwardRef } from '@nestjs/common';
-import { SharedModule } from '../shared/shared.module';
+import { forwardRef, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { USER_MODEL, UserSchema } from './schema/user.schema';
 import { UserService } from './user.service';
@@ -12,4 +11,5 @@ import { AuthModule } from '../auth/auth.module';
     providers: [UserService],
     exports: [UserService],
 })
-export class UserModule {}
+export class UserModule {
+}

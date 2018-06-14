@@ -4,7 +4,7 @@ import { AuthService } from '../auth.service';
 import { ConfigService } from '../../shared/config/config.service';
 import { ConfigVar } from '../../shared/config/config.enum';
 import { JwtPayload } from '../jwt-payload.model';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -18,7 +18,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     async validate(payload: JwtPayload, done: VerifiedCallback) {
         const user = await this._authService.validateUser(payload);
         if (!user) {
-            return done(new UnauthorizedException(), false);
+            return done(new HttpException('You do not have permission to access this resource', HttpStatus.UNAUTHORIZED), false);
         }
 
         return done(null, user, payload.iat);

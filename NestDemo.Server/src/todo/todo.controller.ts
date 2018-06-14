@@ -39,25 +39,10 @@ export class TodoController {
     @Post('create')
     @HttpCode(200)
     @Roles(UserRole.Admin)
-    @ApiResponse({
-        status: HttpStatus.OK,
-        description: 'Create todo successful',
-        type: TodoVm,
-    })
-    @ApiResponse({
-        status: HttpStatus.BAD_REQUEST,
-        description: 'Bad request',
-        type: ApiException,
-    })
-    @ApiResponse({
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-        description: 'Unexpected Server error occurred',
-        type: ApiException,
-    })
-    @ApiOperation({
-        title: 'POST Create New Todo',
-        operationId: 'Todo_CreateTodo',
-    })
+    @ApiResponse({ status: HttpStatus.OK, type: TodoVm })
+    @ApiResponse({ status: HttpStatus.BAD_REQUEST, type: ApiException })
+    @ApiResponse({ status: HttpStatus.INTERNAL_SERVER_ERROR, type: ApiException })
+    @ApiOperation({ title: '', operationId: 'Todo_CreateTodo' })
     async createTodo(@Body() todoParams: TodoParams): Promise<TodoVm> {
         let todo: Todo;
         try {
@@ -66,7 +51,6 @@ export class TodoController {
             throw new HttpException(e, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        this._socketGateway.server.emit('onReload', true);
         return this._mapperService.mapper.map(
             this._todoService.modelName,
             this._todoService.viewModelName,
@@ -75,26 +59,10 @@ export class TodoController {
     }
 
     @Get()
-    @ApiResponse({
-        status: HttpStatus.OK,
-        description: 'Get todos successful',
-        type: TodoVm,
-        isArray: true,
-    })
-    @ApiResponse({
-        status: HttpStatus.BAD_REQUEST,
-        description: 'Bad request',
-        type: ApiException,
-    })
-    @ApiResponse({
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-        description: 'Unexpected Server error occurred',
-        type: ApiException,
-    })
-    @ApiOperation({
-        title: 'GET Get Todos',
-        operationId: 'Todo_GetTodos',
-    })
+    @ApiResponse({ status: HttpStatus.OK, type: TodoVm, isArray: true })
+    @ApiResponse({ status: HttpStatus.BAD_REQUEST, type: ApiException })
+    @ApiResponse({ status: HttpStatus.INTERNAL_SERVER_ERROR, type: ApiException })
+    @ApiOperation({ title: '', operationId: 'Todo_GetTodos' })
     async getAllTodos(@Req() request: Request): Promise<TodoVm[]> {
         let todos: Todo[];
         try {
@@ -112,29 +80,13 @@ export class TodoController {
     @Delete(':id')
     @Roles(UserRole.Admin)
     @UseGuards(RolesGuard)
-    @ApiResponse({
-        status: HttpStatus.OK,
-        description: 'Delete todo successful',
-        type: TodoVm,
-    })
-    @ApiResponse({
-        status: HttpStatus.BAD_REQUEST,
-        description: 'Bad request',
-        type: ApiException,
-    })
-    @ApiResponse({
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-        description: 'Unexpected Server error occurred',
-        type: ApiException,
-    })
-    @ApiOperation({
-        title: 'DELETE Delete Todo',
-        operationId: 'Todo_DeleteTodo',
-    })
+    @ApiResponse({ status: HttpStatus.OK, type: TodoVm })
+    @ApiResponse({ status: HttpStatus.BAD_REQUEST, type: ApiException })
+    @ApiResponse({ status: HttpStatus.INTERNAL_SERVER_ERROR, type: ApiException })
+    @ApiOperation({ title: '', operationId: 'Todo_DeleteTodo' })
     async deleteTodo(@Param('id') id: string): Promise<TodoVm> {
         try {
             const todo: Todo = await this._todoService.delete(id);
-            this._socketGateway.server.emit('onReload', true);
             return this._mapperService.mapper.map(
                 this._todoService.modelName,
                 this._todoService.viewModelName,
@@ -146,25 +98,10 @@ export class TodoController {
     }
 
     @Get(':id')
-    @ApiResponse({
-        status: HttpStatus.OK,
-        description: 'Get todo successful',
-        type: TodoVm,
-    })
-    @ApiResponse({
-        status: HttpStatus.BAD_REQUEST,
-        description: 'Bad request',
-        type: ApiException,
-    })
-    @ApiResponse({
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-        description: 'Unexpected Server error occurred',
-        type: ApiException,
-    })
-    @ApiOperation({
-        title: 'GET Get Todo',
-        operationId: 'Todo_GetTodoById',
-    })
+    @ApiResponse({ status: HttpStatus.OK, type: TodoVm })
+    @ApiResponse({ status: HttpStatus.BAD_REQUEST, type: ApiException })
+    @ApiResponse({ status: HttpStatus.INTERNAL_SERVER_ERROR, type: ApiException })
+    @ApiOperation({ title: '', operationId: 'Todo_GetTodoById' })
     async getTodoById(@Param('id') id: string): Promise<TodoVm> {
         try {
             const todo: Todo = await this._todoService.getById(id);
@@ -180,25 +117,10 @@ export class TodoController {
 
     @Put()
     @HttpCode(200)
-    @ApiResponse({
-        status: HttpStatus.OK,
-        description: 'Update todo successful',
-        type: TodoVm,
-    })
-    @ApiResponse({
-        status: HttpStatus.BAD_REQUEST,
-        description: 'Bad request',
-        type: ApiException,
-    })
-    @ApiResponse({
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-        description: 'Unexpected Server error occurred',
-        type: ApiException,
-    })
-    @ApiOperation({
-        title: 'PUT Update Todo',
-        operationId: 'Todo_UpdateTodo',
-    })
+    @ApiResponse({ status: HttpStatus.OK, type: TodoVm })
+    @ApiResponse({ status: HttpStatus.BAD_REQUEST, type: ApiException })
+    @ApiResponse({ status: HttpStatus.INTERNAL_SERVER_ERROR, type: ApiException })
+    @ApiOperation({ title: '', operationId: 'Todo_UpdateTodo' })
     async updateTodo(@Body() todo: TodoVm): Promise<TodoVm> {
         const existed: Todo = await this._todoService.getById(todo.id);
         if (!existed) throw new HttpException(`Not found ${todo.id}`, HttpStatus.NOT_FOUND);
@@ -206,7 +128,6 @@ export class TodoController {
 
         try {
             const updated: Todo = await this._todoService.updateFromRequestBody(todo);
-            this._socketGateway.server.emit('onReload', true);
             return this._mapperService.mapper.map(
                 this._todoService.modelName,
                 this._todoService.viewModelName,

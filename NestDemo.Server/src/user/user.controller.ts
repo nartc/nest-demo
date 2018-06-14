@@ -9,7 +9,7 @@ import {
     UploadedFile,
     UseInterceptors,
 } from '@nestjs/common';
-import { ApiConsumes, ApiOperation, ApiResponse, ApiUseTags } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiUseTags } from '@nestjs/swagger';
 import { UserService } from './user.service';
 import { MapperService } from '../shared/mapping/mapper.service';
 import { UserVm } from './models/user-vm.model';
@@ -28,25 +28,10 @@ export class UserController {
 
     @Post('register')
     @HttpCode(200)
-    @ApiResponse({
-        status: HttpStatus.OK,
-        description: 'Register successful',
-        type: UserVm,
-    })
-    @ApiResponse({
-        status: HttpStatus.BAD_REQUEST,
-        description: 'Bad request',
-        type: ApiException,
-    })
-    @ApiResponse({
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-        description: 'Unexpected Server error occurred',
-        type: ApiException,
-    })
-    @ApiOperation({
-        title: 'POST Register new User',
-        operationId: 'User_Register',
-    })
+    @ApiResponse({ status: HttpStatus.OK, type: UserVm })
+    @ApiResponse({ status: HttpStatus.BAD_REQUEST, type: ApiException })
+    @ApiResponse({ status: HttpStatus.INTERNAL_SERVER_ERROR, type: ApiException })
+    @ApiOperation({ title: '', operationId: 'User_Register' })
     async register(@Body() registerParams: RegisterParams): Promise<UserVm> {
         const { username, password } = registerParams;
         if (!username || !password) throw new HttpException('Username/Password is required', HttpStatus.BAD_REQUEST);
@@ -71,25 +56,10 @@ export class UserController {
 
     @Post('login')
     @HttpCode(200)
-    @ApiResponse({
-        status: HttpStatus.OK,
-        description: 'Login successful',
-        type: LoginResponse,
-    })
-    @ApiResponse({
-        status: HttpStatus.BAD_REQUEST,
-        description: 'Bad request',
-        type: ApiException,
-    })
-    @ApiResponse({
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-        description: 'Unexpected Server error occurred',
-        type: ApiException,
-    })
-    @ApiOperation({
-        title: 'POST Login User',
-        operationId: 'User_Login',
-    })
+    @ApiResponse({ status: HttpStatus.OK, type: LoginResponse })
+    @ApiResponse({ status: HttpStatus.BAD_REQUEST, type: ApiException })
+    @ApiResponse({ status: HttpStatus.INTERNAL_SERVER_ERROR, type: ApiException })
+    @ApiOperation({ title: '', operationId: 'User_Login' })
     async login(@Body() loginParams: LoginParams): Promise<LoginResponse> {
         const { username, password } = loginParams;
 
@@ -114,25 +84,10 @@ export class UserController {
 
     @Post('upload')
     @HttpCode(200)
-    @ApiResponse({
-        status: HttpStatus.OK,
-        description: 'Upload successful',
-        type: UserVm,
-    })
-    @ApiResponse({
-        status: HttpStatus.BAD_REQUEST,
-        description: 'Bad request',
-        type: ApiException,
-    })
-    @ApiResponse({
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-        description: 'Unexpected Server error occurred',
-        type: ApiException,
-    })
-    @ApiOperation({
-        title: 'POST Upload Avatar',
-        operationId: 'User_Upload',
-    })
+    @ApiResponse({ status: HttpStatus.OK, type: UserVm })
+    @ApiResponse({ status: HttpStatus.BAD_REQUEST, type: ApiException })
+    @ApiResponse({ status: HttpStatus.INTERNAL_SERVER_ERROR, type: ApiException })
+    @ApiOperation({ title: '', operationId: 'User_Upload' })
     @UseInterceptors(FileInterceptor('file'))
     async upload(@UploadedFile() file: FileParams): Promise<UserVm> {
         console.log(file);

@@ -9,6 +9,7 @@ import { SocketModule } from '../socket/socket.module';
     imports: [MongooseModule.forFeature([{ name: TODO_MODEL, schema: TodoSchema }]), SocketModule],
     providers: [TodoService],
     controllers: [TodoController],
+    exports: [TodoService],
 })
 export class TodoModule {
 }

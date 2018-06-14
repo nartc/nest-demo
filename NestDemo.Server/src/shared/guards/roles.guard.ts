@@ -1,4 +1,4 @@
-import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
+import { CanActivate, ExecutionContext, HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { User } from '../../user/models/user.model';
 
@@ -18,7 +18,7 @@ export class RolesGuard implements CanActivate {
         if (user && user.role && hasRole()) {
             return true;
         } else {
-            throw new UnauthorizedException('You do not have permission to access this resource');
+            throw new HttpException('You do not have permission to access this resource', HttpStatus.UNAUTHORIZED);
         }
     }
 }
