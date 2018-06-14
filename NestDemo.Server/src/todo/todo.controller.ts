@@ -24,7 +24,6 @@ import { RolesGuard } from '../shared/guards/roles.guard';
 import { Roles } from '../shared/decorators/roles.decorator';
 import { UserRole } from '../user/models/user-role.enum';
 import { TodoParams } from './models/todo-params.model';
-import { SocketGateway } from '../socket/socket.gateway';
 
 @Controller('todos')
 @UseGuards(AuthGuard('jwt'), RolesGuard)
@@ -32,8 +31,7 @@ import { SocketGateway } from '../socket/socket.gateway';
 @ApiBearerAuth()
 export class TodoController {
     constructor(private readonly _todoService: TodoService,
-                private readonly _mapperService: MapperService,
-                private readonly _socketGateway: SocketGateway) {
+                private readonly _mapperService: MapperService) {
     }
 
     @Post('create')
