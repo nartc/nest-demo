@@ -12,6 +12,10 @@ export class SocketService {
     this.socket = io.connect(environment.backendHost);
   }
 
+  emit(event: string) {
+    this.socket.emit(event);
+  }
+
   onReloadData(): Observable<any> {
     return new Observable<any>(observer => {
       this.socket.on('onReload', (data: any) => {

@@ -13,12 +13,12 @@ import { SocketModule } from './socket/socket.module';
 @Module({
     imports: [
         SharedModule,
-        SocketModule,
         AppRoutingModule,
         MongooseModule.forRoot(ConfigService.connectionString),
         AuthModule,
         UserModule,
         TodoModule,
+        SocketModule,
     ],
     providers: [AppService],
 })

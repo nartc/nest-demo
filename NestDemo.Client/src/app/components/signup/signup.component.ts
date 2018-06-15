@@ -36,7 +36,7 @@ export class SignupComponent implements OnInit {
   }
 
   submit() {
-    const registerParams: RegisterParams = new RegisterParams({ ...this.form.value });
+    const registerParams: RegisterParams = new RegisterParams(this.form.value);
     this._userClientService.register(registerParams)
       .pipe(
         catchError((err: ApiException) => {

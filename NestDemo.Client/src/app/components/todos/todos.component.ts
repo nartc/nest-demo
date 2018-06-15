@@ -1,10 +1,10 @@
 import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
-import { HttpService } from '../../services/http.service';
-import { catchError, filter } from 'rxjs/operators';
-import { of } from 'rxjs/internal/observable/of';
+import { FormBuilder, FormGroup } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { sortBy } from 'lodash';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { of } from 'rxjs/internal/observable/of';
+import { catchError, filter } from 'rxjs/operators';
+import { HttpService } from '../../services/http.service';
 import { SocketService } from '../../services/socket.service';
 
 @Component({
@@ -24,8 +24,9 @@ export class TodosComponent implements OnInit, OnChanges {
     private _httpService: HttpService,
     private _snackbar: MatSnackBar,
     private _fb: FormBuilder,
-    private _socketService: SocketService
-  ) {}
+    private _socketService: SocketService,
+  ) {
+  }
 
   ngOnInit() {
     this.initSocket();
@@ -43,7 +44,7 @@ export class TodosComponent implements OnInit, OnChanges {
 
     this._socketService.onReloadData().subscribe(data => {
       if (data) {
-        this.loadTodos();
+        this.todos = sortBy(data.todos, ['isCompleted']);
       }
     });
   }
@@ -73,7 +74,7 @@ export class TodosComponent implements OnInit, OnChanges {
             this.openSnackbar(err.error.message);
             return of(null);
           }),
-          filter(data => !!data)
+          filter(data => !!data),
         )
         .subscribe(data => {
           this.todos.splice(this.todos.indexOf(this.todos.find(todo => todo.id === data.id)), 1, data);
@@ -81,6 +82,7 @@ export class TodosComponent implements OnInit, OnChanges {
           this.todos = sortBy(this.todos, ['isCompleted']);
           this.currentEditingTodo = null;
           this.openSnackbar(`${data.content} has been updated`);
+          this._socketService.emit('reload');
         });
     } else {
       this._httpService
@@ -94,13 +96,14 @@ export class TodosComponent implements OnInit, OnChanges {
             this.openSnackbar(err.error.message);
             return of(null);
           }),
-          filter(data => !!data)
+          filter(data => !!data),
         )
         .subscribe(data => {
           this.todos.push(data);
           this.resetForm();
           this.todos = sortBy(this.todos, ['isCompleted']);
           this.openSnackbar(`${data.content} has been added`);
+          this._socketService.emit('reload');
         });
     }
   }
@@ -124,10 +127,9 @@ export class TodosComponent implements OnInit, OnChanges {
           this.openSnackbar(err.error.statusCode === 401 ? err.error.message.error : err.error.message);
           return of(null);
         }),
-        filter(data => !!data)
+        filter(data => !!data),
       )
       .subscribe(data => {
-        console.log(data);
         this.todos = sortBy(data, ['isCompleted']);
       });
   }
@@ -145,12 +147,13 @@ export class TodosComponent implements OnInit, OnChanges {
             this.openSnackbar(err.error.statusCode === 401 ? err.error.message.error : err.error.message);
             return of(null);
           }),
-          filter(data => !!data)
+          filter(data => !!data),
         )
         .subscribe(data => {
           this.todos.splice(this.todos.indexOf(this.todos.find(todo => todo.id === data.id)), 1);
           this.todos = sortBy(this.todos, ['isCompleted']);
           this.openSnackbar(`${data.content} has been removed`);
+          this._socketService.emit('reload');
         });
     }
   }
@@ -183,13 +186,14 @@ export class TodosComponent implements OnInit, OnChanges {
           this.openSnackbar(err.error.message);
           return of(null);
         }),
-        filter(data => !!data)
+        filter(data => !!data),
       )
       .subscribe(data => {
         this.todos.splice(this.todos.indexOf(this.todos.find(todo => todo.id === data.id)), 1, data);
         this.todos = sortBy(this.todos, ['isCompleted']);
         this.currentEditingTodo = null;
         this.openSnackbar(`${data.content} has been completed`);
+        this._socketService.emit('reload');
       });
   }
 

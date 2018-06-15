@@ -27,7 +27,7 @@ async function bootstrap() {
         .setDescription('API Documentation for NestJS Demo')
         .setVersion('1.0.0')
         .setHost(hostDomain.split('//')[1])
-        .setSchemes(isDev === 'development' ? 'http' : 'https')
+        .setSchemes(AppModule.isDev ? 'http' : 'https')
         .setBasePath('/api')
         .addTag('User', 'User related API')
         .addTag('Todo', 'Todo related API')
