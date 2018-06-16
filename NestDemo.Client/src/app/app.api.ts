@@ -28,10 +28,6 @@ export class UserClient extends BaseClient {
         this.baseUrl = baseUrl ? baseUrl : "http://localhost:8080/api";
     }
 
-    /**
-     * POST Register new User
-     * @return Register successful
-     */
     register(registerParams: RegisterParams): Observable<UserVm> {
         let url_ = this.baseUrl + "/users/register";
         url_ = url_.replace(/[?&]$/, "");
@@ -100,10 +96,6 @@ export class UserClient extends BaseClient {
         return _observableOf<UserVm>(<any>null);
     }
 
-    /**
-     * POST Login User
-     * @return Login successful
-     */
     login(loginParams: LoginParams): Observable<LoginResponse> {
         let url_ = this.baseUrl + "/users/login";
         url_ = url_.replace(/[?&]$/, "");
@@ -171,6 +163,71 @@ export class UserClient extends BaseClient {
         }
         return _observableOf<LoginResponse>(<any>null);
     }
+
+    upload(): Observable<UserVm> {
+        let url_ = this.baseUrl + "/users/upload";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return _observableFrom(this.transformOptions(options_)).pipe(_observableMergeMap(transformedOptions_ => {
+            return this.http.request("post", url_, transformedOptions_);
+        })).pipe(_observableMergeMap((response_: any) => {
+            return this.processUpload(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processUpload(<any>response_);
+                } catch (e) {
+                    return <Observable<UserVm>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<UserVm>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processUpload(response: HttpResponseBase): Observable<UserVm> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? UserVm.fromJS(resultData200) : new UserVm();
+            return _observableOf(result200);
+            }));
+        } else if (status === 400) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = resultData400 ? ApiException.fromJS(resultData400) : new ApiException();
+            return throwException("A server error occurred.", status, _responseText, _headers, result400);
+            }));
+        } else if (status === 500) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result500: any = null;
+            let resultData500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result500 = resultData500 ? ApiException.fromJS(resultData500) : new ApiException();
+            return throwException("A server error occurred.", status, _responseText, _headers, result500);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<UserVm>(<any>null);
+    }
 }
 
 @Injectable({
@@ -187,10 +244,6 @@ export class TodoClient extends BaseClient {
         this.baseUrl = baseUrl ? baseUrl : "http://localhost:8080/api";
     }
 
-    /**
-     * POST Create New Todo
-     * @return Create todo successful
-     */
     createTodo(todoParams: TodoParams): Observable<TodoVm> {
         let url_ = this.baseUrl + "/todos/create";
         url_ = url_.replace(/[?&]$/, "");
@@ -259,10 +312,6 @@ export class TodoClient extends BaseClient {
         return _observableOf<TodoVm>(<any>null);
     }
 
-    /**
-     * GET Get Todos
-     * @return Get todos successful
-     */
     getTodos(): Observable<TodoVm[]> {
         let url_ = this.baseUrl + "/todos";
         url_ = url_.replace(/[?&]$/, "");
@@ -332,10 +381,6 @@ export class TodoClient extends BaseClient {
         return _observableOf<TodoVm[]>(<any>null);
     }
 
-    /**
-     * PUT Update Todo
-     * @return Update todo successful
-     */
     updateTodo(todoVm: TodoVm): Observable<TodoVm> {
         let url_ = this.baseUrl + "/todos";
         url_ = url_.replace(/[?&]$/, "");
@@ -404,10 +449,6 @@ export class TodoClient extends BaseClient {
         return _observableOf<TodoVm>(<any>null);
     }
 
-    /**
-     * DELETE Delete Todo
-     * @return Delete todo successful
-     */
     deleteTodo(id: string): Observable<TodoVm> {
         let url_ = this.baseUrl + "/todos/{id}";
         if (id === undefined || id === null)
@@ -476,10 +517,6 @@ export class TodoClient extends BaseClient {
         return _observableOf<TodoVm>(<any>null);
     }
 
-    /**
-     * GET Get Todo
-     * @return Get todo successful
-     */
     getTodoById(id: string): Observable<TodoVm> {
         let url_ = this.baseUrl + "/todos/{id}";
         if (id === undefined || id === null)
@@ -606,6 +643,7 @@ export class UserVm implements IUserVm {
     firstName?: string | null;
     lastName?: string | null;
     fullName?: string | null;
+    avatar?: string | null;
 
     constructor(data?: IUserVm) {
         if (data) {
@@ -626,6 +664,7 @@ export class UserVm implements IUserVm {
             this.firstName = data["firstName"] !== undefined ? data["firstName"] : <any>null;
             this.lastName = data["lastName"] !== undefined ? data["lastName"] : <any>null;
             this.fullName = data["fullName"] !== undefined ? data["fullName"] : <any>null;
+            this.avatar = data["avatar"] !== undefined ? data["avatar"] : <any>null;
         }
     }
 
@@ -646,6 +685,7 @@ export class UserVm implements IUserVm {
         data["firstName"] = this.firstName !== undefined ? this.firstName : <any>null;
         data["lastName"] = this.lastName !== undefined ? this.lastName : <any>null;
         data["fullName"] = this.fullName !== undefined ? this.fullName : <any>null;
+        data["avatar"] = this.avatar !== undefined ? this.avatar : <any>null;
         return data;
     }
 }
@@ -659,6 +699,7 @@ export interface IUserVm {
     firstName?: string | null;
     lastName?: string | null;
     fullName?: string | null;
+    avatar?: string | null;
 }
 
 export class ApiException implements IApiException {

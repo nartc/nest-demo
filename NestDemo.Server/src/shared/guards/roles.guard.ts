@@ -18,7 +18,7 @@ export class RolesGuard implements CanActivate {
         if (user && user.role && hasRole()) {
             return true;
         } else {
-            throw new HttpException('You do not have permission to access this resource', HttpStatus.UNAUTHORIZED);
+            throw new HttpException('You do not have permission to access this resource (Roles)', HttpStatus.UNAUTHORIZED);
         }
     }
 }

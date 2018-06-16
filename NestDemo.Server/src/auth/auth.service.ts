@@ -21,6 +21,7 @@ export class AuthService {
     }
 
     async signPayload(payload: JwtPayload): Promise<string> {
+        // jwt.sign()
         return sign(payload, this.jwtKey, this.jwtOptions);
     }
 

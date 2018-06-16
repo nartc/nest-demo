@@ -14,6 +14,7 @@ async function bootstrap() {
      * @type {INestApplication & INestExpressApplication}
      */
     const app = await NestFactory.create(AppModule, { cors: true });
+    // app = express();
     const hostDomain = AppModule.isDev ? `${AppModule.host}:${AppModule.port.toString()}` : AppModule.host;
 
     app.use(helmet());
@@ -65,6 +66,7 @@ async function bootstrap() {
      */
     app.useGlobalFilters(new HttpExceptionFilter());
 
+    // app.listen()
     await app.listen(AppModule.port);
 
     if (module.hot) {

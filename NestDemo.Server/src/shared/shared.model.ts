@@ -1,11 +1,14 @@
 import { ApiModelPropertyOptional } from '@nestjs/swagger';
 import { Document, SchemaDefinition, SchemaOptions } from 'mongoose';
 
+// schema = new Schema
+// model<T>('User', UserSchema)// Model<T>
+
 export interface SharedModel extends Document {
     createdAt?: Date;
     updatedAt?: Date;
 }
-
+// new Schema(definition, options);
 export const SharedDefinition: SchemaDefinition = {
     createdAt: {
         type: Date,

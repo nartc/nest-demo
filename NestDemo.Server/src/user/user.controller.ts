@@ -48,8 +48,8 @@ export class UserController {
 
         const newUser: User = await this._userService.register(registerParams);
         return this._mapperService.mapper.map(
-            this._userService.modelName,
-            this._userService.viewModelName,
+            this._userService.modelName, // User
+            this._userService.viewModelName, // UserVm
             newUser.toJSON(),
         );
     }

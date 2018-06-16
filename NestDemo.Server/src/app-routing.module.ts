@@ -10,7 +10,7 @@ import { TodoModule } from './todo/todo.module';
  */
 const routes: Routes = [
     {
-        path: '/api',
+        path: '/api', // localhost:3000/api/users
         children: [
             {
                 path: '/',

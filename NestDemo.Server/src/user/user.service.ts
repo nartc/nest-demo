@@ -37,7 +37,7 @@ export class UserService extends SharedService<User> {
         try {
             const result = await this.create(newUser);
             return this.getById(result._id);
-        } catch (e) {
+        } catch (e) { // MongoError
             throw new HttpException(e, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
