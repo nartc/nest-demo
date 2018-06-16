@@ -1,0 +1,33 @@
+<form [formGroup]="form" (ngSubmit)="submit()">
+  <mat-card>
+    <mat-card-content>
+      <mat-form-field class="w-100">
+        <input type="text" matInput formControlName="username" placeholder="Username">
+        <mat-error *ngIf="getFormControl('username').touched && getFormControl('username').invalid">
+          {{getErrorMessage('username')}}
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="w-100">
+        <input type="password" matInput formControlName="password" placeholder="Password">
+        <mat-error *ngIf="getFormControl('password').touched && getFormControl('password').invalid">
+          {{getErrorMessage('password')}}
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="w-100">
+        <input type="text" matInput formControlName="firstName" placeholder="First Name">
+      </mat-form-field>
+
+      <mat-form-field class="w-100">
+        <input type="text" matInput formControlName="lastName" placeholder="Last Name">
+      </mat-form-field>
+    </mat-card-content>
+    <mat-card-footer>
+      <button mat-raised-button color="primary" class="text-center d-block mt-2 ml-2" [disabled]="form.invalid"
+              type="submit">
+        Sign up
+      </button>
+    </mat-card-footer>
+  </mat-card>
+</form>

@@ -1,0 +1,18 @@
+<form [formGroup]="form" (ngSubmit)="submit()">
+  <mat-card>
+    <mat-card-content class="w-100">
+      <mat-form-field class="w-50 mr-3">
+        <input type="text" matInput formControlName="content" placeholder="Todo content">
+      </mat-form-field>
+      <button mat-raised-button color="primary" class="text-center mx-2" [disabled]="!form.controls['content'].value"
+              type="submit">Save
+      </button>
+      <button mat-raised-button color="warn" class="text-center mx-2" [disabled]="!form.controls['content'].value"
+              type="button" (click)="onCancelClick()">Cancel
+      </button>
+    </mat-card-content>
+  </mat-card>
+</form>
+<hr>
+<app-todo-list [todos]="todos" (onRemoveClicked)="onRemoveClickedHandler($event)"
+               (onUpdateClicked)="onUpdateClickedHandler($event)" (onStatusChanged)="onStatusChangedHandler($event)"></app-todo-list>

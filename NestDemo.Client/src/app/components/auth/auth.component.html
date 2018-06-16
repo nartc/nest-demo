@@ -1,0 +1,14 @@
+<div class="container">
+  <mat-tab-group #authTabs class="mt-2 mx-auto">
+    <mat-tab label="Sign Up" *ngIf="!isLoggedIn">
+      <app-signup (onSignupSuccess)="onSignUpSuccessHandler($event)"></app-signup>
+    </mat-tab>
+    <mat-tab label="Sign In" *ngIf="!isLoggedIn">
+      <app-signin (onLoginSuccess)="onLoginSuccessHandler($event)"></app-signin>
+    </mat-tab>
+    <mat-tab label="Profile" *ngIf="isLoggedIn">
+      <app-profile [user]="user" (onSignoutClick)="onSignoutClickHandler($event)"></app-profile>
+    </mat-tab>
+  </mat-tab-group>
+</div>
+
